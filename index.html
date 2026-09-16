@@ -243,6 +243,20 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
 .modal-btn.cancel { background: #f1f5f9; color: var(--muted); }
 .modal-btn.go { background: linear-gradient(135deg, #4285F4, #34A853); color: white; }
 
+/* FEEDBACK FILTER TABS */
+.filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0 16px; }
+.filter-tab { background: white; border: 2px solid var(--border); border-radius: 20px; padding: 7px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.85em; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.filter-tab:hover { border-color: var(--primary-light); color: var(--primary); }
+.filter-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+/* UNANSWERED BANNER */
+#blankWarning { background: #fffbeb; border: 2px solid #fde68a; border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 0.9em; color: #92400e; }
+#blankWarning ul { list-style: none; padding: 0; margin: 10px 0 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+.blank-link { background: white; border: 1px solid #fbbf24; color: #92400e; border-radius: 8px; padding: 6px 12px; font-size: 0.85em; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.blank-link:hover { background: #fef3c7; }
+.dismiss-btn { background: linear-gradient(135deg,#f59e0b,#d97706); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9em; }
+.blank-highlight { outline: 3px solid var(--warning) !important; outline-offset: 2px; transition: outline 0.2s; }
+
 /* SAVE TOAST */
 #saveToast { display: none; position: fixed; bottom: 22px; right: 22px; background: var(--success); color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85em; font-weight: 600; z-index: 999; box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
 
@@ -297,6 +311,16 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
         <li>Complete all sections before calculating your grade.</li>
         <li>Your answers are saved automatically as you type.</li>
       </ul>
+      <button class="instr-toggle" onclick="toggleInstr('es-directions')">🌐 Ver en español</button>
+      <div class="instr-es" id="es-directions">
+        <strong>📋 Instrucciones:</strong>
+        <ul>
+          <li>Tienes 60 minutos para completar esta prueba de práctica.</li>
+          <li>Los audios se reproducirán un máximo de <strong>2 veces</strong>. Lee las preguntas antes de escuchar.</li>
+          <li>Completa todas las secciones antes de calcular tu nota.</li>
+          <li>Tus respuestas se guardan automáticamente mientras escribes.</li>
+        </ul>
+      </div>
     </div>
 
     <!-- STUDENT NAME -->
@@ -488,7 +512,7 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
           </div>
         </div>
 
-        <div class="verb-bank">eat &nbsp;–&nbsp; use &nbsp;–&nbsp; order &nbsp;–&nbsp; bring &nbsp;–&nbsp; rent &nbsp;–&nbsp; book</div>
+        <div class="verb-bank" id="verbBankRA">eat &nbsp;–&nbsp; use &nbsp;–&nbsp; order &nbsp;–&nbsp; take &nbsp;–&nbsp; rent &nbsp;–&nbsp; book</div>
 
         <div class="reading-text-box">
           <h4>🏨 At Hotel Pacific, Sydney…</h4>
@@ -644,7 +668,7 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
           <div class="rubric-note">Evalúa tu propio texto y selecciona el nivel que mejor describe tu respuesta en cada criterio. Esta rúbrica alimenta tu nota final.</div>
 
           <!-- Criterion 1: Coherencia y Extensión -->
-          <div class="criterion">
+          <div class="criterion" id="rubCriterion1">
             <h4>Coherencia y Extensión <span style="font-weight:400;color:var(--muted)">(máx. 4 pts)</span></h4>
             <div class="criterion-options">
               <label><input type="radio" name="rub1" value="4" onchange="updateRubric();saveAll()">
@@ -661,7 +685,7 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
           </div>
 
           <!-- Criterion 2: Vocabulario -->
-          <div class="criterion">
+          <div class="criterion" id="rubCriterion2">
             <h4>Vocabulario <span style="font-weight:400;color:var(--muted)">(máx. 3 pts)</span></h4>
             <div class="criterion-options">
               <label><input type="radio" name="rub2" value="3" onchange="updateRubric();saveAll()">
@@ -678,7 +702,7 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
           </div>
 
           <!-- Criterion 3: Gramática -->
-          <div class="criterion">
+          <div class="criterion" id="rubCriterion3">
             <h4>Gramática <span style="font-weight:400;color:var(--muted)">(máx. 3 pts)</span></h4>
             <div class="criterion-options">
               <label><input type="radio" name="rub3" value="3" onchange="updateRubric();saveAll()">
@@ -695,7 +719,7 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
           </div>
 
           <!-- Criterion 4: Ortografía -->
-          <div class="criterion">
+          <div class="criterion" id="rubCriterion4">
             <h4>Ortografía <span style="font-weight:400;color:var(--muted)">(máx. 2 pts)</span></h4>
             <div class="criterion-options">
               <label><input type="radio" name="rub4" value="2" onchange="updateRubric();saveAll()">
@@ -729,14 +753,22 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
       </div>
     </div>
 
+    <!-- UNANSWERED WARNING (non-blocking) -->
+    <div id="blankWarning" style="display:none;">
+      <strong>⚠️ Hay preguntas sin responder:</strong>
+      <ul id="blankList"></ul>
+      <button class="dismiss-btn" onclick="document.getElementById('blankWarning').style.display='none'; calculateFinalGrade()">
+        Continuar de todos modos →
+      </button>
+    </div>
+
     <!-- CALCULATE BUTTON -->
-    <button class="calculate-btn" onclick="calculateFinalGrade()">
+    <button class="calculate-btn" onclick="checkBlanksAndCalculate()">
       🎯 Calcular mi nota final
     </button>
 
     <!-- RESULTS -->
     <div id="results"></div>
-    <div id="geminiBlock" style="display:none; margin-top:24px;"></div>
 
   </div><!-- /content -->
 </div><!-- /container -->
@@ -763,7 +795,7 @@ audio { width: 100%; border-radius: 8px; margin-bottom: 8px; }
 // ══════════════════════════════════════
 // CONSTANTS
 // ══════════════════════════════════════
-const SAVE_KEY = 'mocktest_inu2101_midterm_v1';
+const SAVE_KEY = 'mocktest_inu2101_midterm_v2';
 const playCounts = {};
 let saveTimer;
 let lb_j1_score = 0; // Justification score item 1 (0 or 1)
@@ -782,11 +814,7 @@ function trackPlay(audioId) {
   if (count >= 2) {
     counter.textContent = '⚠️ Límite de 2 reproducciones alcanzado';
     counter.className   = 'play-counter limit';
-    audio.addEventListener('ended', () => {
-      audio.controls = false;
-      audio.style.opacity = '0.4';
-      audio.style.pointerEvents = 'none';
-    }, { once: true });
+    // El audio NUNCA se desactiva — solo se muestra la advertencia visual (Regla 8).
   } else if (count === 1) {
     counter.textContent = 'Plays: 1 / 2 — 1 reproducción restante';
     counter.className   = 'play-counter warning';
@@ -949,6 +977,26 @@ function updateRubric() {
 }
 
 // ══════════════════════════════════════
+// READING A — VERB BANK RANDOMIZATION (Fisher-Yates)
+// ══════════════════════════════════════
+const verbBankWords = ['eat', 'use', 'order', 'take', 'rent', 'book'];
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderVerbBank() {
+  const el = document.getElementById('verbBankRA');
+  if (!el) return;
+  el.innerHTML = shuffleArray(verbBankWords).join(' &nbsp;–&nbsp; ');
+}
+
+// ══════════════════════════════════════
 // GRADE CALCULATOR (Chilean scale)
 // ══════════════════════════════════════
 function calcGrade(score, max) {
@@ -963,7 +1011,7 @@ function calcGrade(score, max) {
 const raKey = [
   { modal: 'CAN',  verb: 'ORDER' },
   { modal: 'CAN',  verb: 'USE'   },
-  { modal: "CAN'T", verb: 'BRING' },
+  { modal: "CAN'T", verb: 'TAKE' },
   { modal: 'CAN',  verb: 'RENT'  },
   { modal: "CAN'T", verb: 'EAT'  },
   { modal: 'CAN',  verb: 'BOOK'  },
@@ -1048,21 +1096,112 @@ Analiza señales de uso de IA o traductor: vocabulario avanzado para el nivel, a
 5. 💬 FRASE DE CIERRE motivadora`;
 }
 
+// ══════════════════════════════════════
+// CLIPBOARD + MODAL (Regla 23 — el modal siempre aparece,
+// independiente de si el clipboard tiene éxito o falla)
+// ══════════════════════════════════════
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
+function showGeminiModal() {
+  document.getElementById('geminiModal').classList.add('active');
+}
+
 function copyForGemini() {
   const text = document.getElementById('writing').value.trim();
   if (text.length < 5) {
     alert('Primero escribe tu texto en la sección de Writing.');
     return;
   }
-  const prompt = buildGeminiPrompt();
-  navigator.clipboard.writeText(prompt).then(() => {
-    document.getElementById('geminiModal').classList.add('active');
-  }).catch(() => {
-    alert('No se pudo copiar automáticamente. Selecciona y copia tu texto manualmente.');
-  });
+  const geminiText = buildGeminiPrompt();
+  copyToClipboard(geminiText);
+  showGeminiModal();
 }
 function closeModal() { document.getElementById('geminiModal').classList.remove('active'); }
 function openGemini() { closeModal(); window.open('https://gemini.google.com', '_blank'); }
+
+// ══════════════════════════════════════
+// UNANSWERED CHECK (non-blocking banner — Rule 8)
+// ══════════════════════════════════════
+function checkBlanksAndCalculate() {
+  const blanks = [];
+
+  for (let i = 1; i <= 6; i++) {
+    if (!getRadio('la' + i)) blanks.push({ label: `Listening A — Pregunta ${i}`, targetId: `la${i}_A` });
+  }
+
+  for (let i = 1; i <= 4; i++) {
+    const val = getRadio('lb' + i);
+    if (!val) {
+      blanks.push({ label: `Listening B — Pregunta ${i}`, targetId: `lb${i}_T` });
+    } else if (val === 'F' && g('lb' + i + '_corr').trim() === '') {
+      blanks.push({ label: `Listening B — Corrección pregunta ${i}`, targetId: `lb${i}_corr` });
+    }
+  }
+
+  for (let i = 1; i <= 6; i++) {
+    if (g('ra' + i).trim() === '') blanks.push({ label: `Reading A — Espacio ${i}`, targetId: `ra${i}` });
+  }
+
+  for (let i = 1; i <= 4; i++) {
+    if (g('rb_ans' + i).trim() === '') blanks.push({ label: `Reading B — Pregunta ${i}`, targetId: `rb_ans${i}` });
+  }
+
+  if (g('writing').trim() === '') blanks.push({ label: 'Writing — Texto', targetId: 'writing' });
+
+  const rubricLabels = ['Coherencia y Extensión', 'Vocabulario', 'Gramática', 'Ortografía'];
+  for (let i = 1; i <= 4; i++) {
+    if (!getRadio('rub' + i)) blanks.push({ label: `Rúbrica Writing — ${rubricLabels[i - 1]}`, targetId: `rubCriterion${i}` });
+  }
+
+  if (blanks.length === 0) {
+    document.getElementById('blankWarning').style.display = 'none';
+    calculateFinalGrade();
+    return;
+  }
+
+  const list = document.getElementById('blankList');
+  list.innerHTML = '';
+  blanks.forEach(b => {
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'blank-link';
+    btn.textContent = b.label;
+    btn.onclick = () => {
+      const el = document.getElementById(b.targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('blank-highlight');
+        setTimeout(() => el.classList.remove('blank-highlight'), 2000);
+        if (typeof el.focus === 'function') setTimeout(() => el.focus(), 400);
+      }
+    };
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+
+  const warning = document.getElementById('blankWarning');
+  warning.style.display = 'block';
+  warning.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
 // ══════════════════════════════════════
 // MAIN GRADE CALCULATION
@@ -1266,9 +1405,20 @@ function calculateFinalGrade() {
     </div>`;
   }
 
+  // ══ FEEDBACK FILTER TABS ══
+  html += `
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" onclick="filterFeedback('all', event)">Todas</button>
+      <button class="filter-tab" onclick="filterFeedback('listening', event)">🎧 Listening</button>
+      <button class="filter-tab" onclick="filterFeedback('reading', event)">📖 Reading</button>
+      <button class="filter-tab" onclick="filterFeedback('writing', event)">✍️ Writing</button>
+      <button class="filter-tab" onclick="filterFeedback('correct', event)">✓ Correctas</button>
+      <button class="filter-tab" onclick="filterFeedback('incorrect', event)">✗ Incorrectas</button>
+    </div>`;
+
   // ══ DETAILED FEEDBACK ══
   html += `
-    <div class="feedback-part">
+    <div class="feedback-part" data-section="listening">
       <div class="feedback-part-header listening">🎧 Listening Part A — Feedback</div>`;
 
   const laSentences = [
@@ -1278,7 +1428,7 @@ function calculateFinalGrade() {
   ];
   laResults.forEach((r, i) => {
     html += `
-      <div class="feedback-item">
+      <div class="feedback-item ${r.correct ? 'fb-correct' : 'fb-incorrect'}">
         <div class="fi-label"><span>${i+1}. ${laSentences[i]}</span>
           <span class="tag ${r.correct ? 'correct-tag' : 'incorrect-tag'}">${r.correct ? '✅ Correcto — 1 pt' : '❌ Incorrecto — 0 pts'}</span></div>
         <div class="student-ans">Tu respuesta: <strong>${r.val || '(sin respuesta)'}</strong></div>
@@ -1287,14 +1437,14 @@ function calculateFinalGrade() {
   });
   html += `</div>
 
-    <div class="feedback-part">
+    <div class="feedback-part" data-section="listening">
       <div class="feedback-part-header listening">🎧 Listening Part B — Feedback</div>`;
 
   lbResults.forEach((r, i) => {
     const isFalseItem = (i === 0 || i === 2);
     const jScore = i === 0 ? lb_j1_score : (i === 2 ? lb_j3_score : null);
     html += `
-      <div class="feedback-item">
+      <div class="feedback-item ${r.correct ? 'fb-correct' : 'fb-incorrect'}">
         <div class="fi-label"><span>${i+1}. ${r.statement}</span>
           <span class="tag info-tag">${r.answer}</span>
           <span class="tag ${r.correct ? 'correct-tag' : 'incorrect-tag'}">${r.correct ? '✅ T/F correcto — 1 pt' : '❌ T/F incorrecto — 0 pts'}</span>
@@ -1308,7 +1458,7 @@ function calculateFinalGrade() {
   });
   html += `</div>
 
-    <div class="feedback-part">
+    <div class="feedback-part" data-section="reading">
       <div class="feedback-part-header reading">📖 Reading Part A — Feedback (CAN / CAN'T + verbo)</div>`;
 
   const raSentences = [
@@ -1332,8 +1482,9 @@ function calculateFinalGrade() {
       else if (!r.modalOk && r.verbOk)
         detail = `<div class="partial-note">Verbo correcto (${r.key.verb}) ✅ · Modal faltante: <strong>${r.key.modal}</strong> ❌</div>`;
     }
+    const raFbClass = r.score === 1.0 ? 'fb-correct' : (r.score === 0 ? 'fb-incorrect' : '');
     html += `
-      <div class="feedback-item">
+      <div class="feedback-item ${raFbClass}">
         <div class="fi-label"><span>${i+1}. ${raSentences[i]}</span>
           <span class="tag ${tagClass}">${tagText}</span></div>
         <div class="student-ans">Tu respuesta: <strong>${r.val || '(sin respuesta)'}</strong></div>
@@ -1343,7 +1494,7 @@ function calculateFinalGrade() {
   });
   html += `</div>
 
-    <div class="feedback-part">
+    <div class="feedback-part" data-section="reading">
       <div class="feedback-part-header reading">📖 Reading Part B — Respuestas Modelo</div>
       <div class="feedback-item">
         <div class="fi-label">Puntaje ingresado: <strong>${readingBScore.toFixed(1)} / 6 pts</strong></div>
@@ -1381,7 +1532,7 @@ function calculateFinalGrade() {
       </div>
     </div>
 
-    <div class="feedback-part">
+    <div class="feedback-part" data-section="writing">
       <div class="feedback-part-header" style="background:#fff1f2;color:#be123c;">✍️ Writing — Resumen de rúbrica</div>
       <div class="feedback-item">
         <div class="fi-label">Puntaje autoevaluado: <strong>${writingScore.toFixed(1)} / 12 pts</strong></div>
@@ -1399,6 +1550,36 @@ function calculateFinalGrade() {
   resultsDiv.innerHTML = html;
   resultsDiv.style.display = 'block';
   resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ══════════════════════════════════════
+// FEEDBACK FILTER TABS
+// ══════════════════════════════════════
+function filterFeedback(type, evt) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  if (evt && evt.target) evt.target.classList.add('active');
+
+  const parts = document.querySelectorAll('.feedback-part');
+  const items = document.querySelectorAll('.feedback-item');
+
+  if (type === 'correct' || type === 'incorrect') {
+    parts.forEach(p => p.style.display = 'block');
+    items.forEach(item => {
+      const isCorrect   = item.classList.contains('fb-correct');
+      const isIncorrect = item.classList.contains('fb-incorrect');
+      const show = type === 'correct' ? isCorrect : isIncorrect;
+      item.style.display = show ? '' : 'none';
+    });
+    parts.forEach(p => {
+      const visible = [...p.querySelectorAll('.feedback-item')].some(i => i.style.display !== 'none');
+      p.style.display = visible ? 'block' : 'none';
+    });
+  } else {
+    items.forEach(i => i.style.display = '');
+    parts.forEach(p => {
+      p.style.display = (type === 'all' || p.dataset.section === type) ? 'block' : 'none';
+    });
+  }
 }
 
 // ══════════════════════════════════════
@@ -1487,27 +1668,22 @@ P1: ___ / 1 | P2: ___ / 1 | P3: ___ / 2 | P4: ___ / 2 | Total: ___ / 6`;
 }
 
 function copyLBGemini() {
-  const prompt = buildLBGeminiPrompt();
-  navigator.clipboard.writeText(prompt).then(() => {
-    document.getElementById('geminiModal').classList.add('active');
-  }).catch(() => {
-    alert('No se pudo copiar automáticamente. Por favor, copia el texto manualmente.');
-  });
+  const geminiText = buildLBGeminiPrompt();
+  copyToClipboard(geminiText);
+  showGeminiModal();
 }
 
 function copyRBGemini() {
-  const prompt = buildRBGeminiPrompt();
-  navigator.clipboard.writeText(prompt).then(() => {
-    document.getElementById('geminiModal').classList.add('active');
-  }).catch(() => {
-    alert('No se pudo copiar automáticamente. Por favor, copia el texto manualmente.');
-  });
+  const geminiText = buildRBGeminiPrompt();
+  copyToClipboard(geminiText);
+  showGeminiModal();
 }
 
 // ══════════════════════════════════════
 // INIT
 // ══════════════════════════════════════
 window.onload = function() {
+  renderVerbBank();
   loadSaved();
   updateWordCount();
   updateRubric();
